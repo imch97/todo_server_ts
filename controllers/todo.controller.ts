@@ -7,7 +7,6 @@ exports.todoCreateWithUsers = async function (
 	res: express.Response
 ) {
 	try {
-		console.log('-------------------')
 		const { text } = req.body
 
 		const token = req.headers.authorization.split(' ')[1]
@@ -89,7 +88,7 @@ exports.todoCompleteAll = async function (
 
 		await ToDoItem.updateMany(
 			{ owner: decoded.userId },
-			{ $set: { completed: true } },
+			{ $set: { state: 'completed' } },
 			function (err) {
 				if (err) return next(err)
 				res.send('All ToDo`s Completed.')
@@ -112,7 +111,7 @@ exports.todoDeleteCompleted = async function (
 		const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
 		await ToDoItem.deleteMany(
-			{ owner: decoded.userId, completed: true },
+			{ owner: decoded.userId, state: 'completed' },
 			function (err) {
 				if (err) return next(err)
 				res.send('All ToDo`s Completed.')
