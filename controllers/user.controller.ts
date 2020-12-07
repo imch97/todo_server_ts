@@ -1,7 +1,7 @@
-const jwt = require('jsonwebtoken')
+import jwt from 'jsonwebtoken'
 const bcrypt = require('bcryptjs')
 const { validationResult } = require('express-validator')
-const User = require('../models/user.model.js')
+const User = require('../models/user.model.ts')
 
 exports.register = async function (req, res) {
 	try {
