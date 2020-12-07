@@ -1,9 +1,19 @@
 import * as jwt from 'jsonwebtoken'
+import * as express from 'express'
 const bcrypt = require('bcryptjs')
 const { validationResult } = require('express-validator')
 const User = require('../models/user.model.ts')
 
-exports.register = async function (req, res) {
+interface AnswerFind {
+	_id: string;
+	email: string;
+	password: string;
+}
+
+exports.register = async function (
+	req: express.Request,
+	res: express.Response
+) {
 	try {
 		const errors = validationResult(req)
 
@@ -16,7 +26,7 @@ exports.register = async function (req, res) {
 
 		const { email, password } = req.body
 
-		const candidate = await User.findOne({ email })
+		const candidate: AnswerFind | null = await User.findOne({ email })
 
 		if (candidate) {
 			return res
@@ -24,7 +34,7 @@ exports.register = async function (req, res) {
 				.json({ message: 'Такой пользователь уже существует' })
 		}
 
-		const hashedPassword = await bcrypt.hash(password, 12)
+		const hashedPassword: string = await bcrypt.hash(password, 12)
 		const user = new User({ email, password: hashedPassword })
 		console.log(user)
 		await user.save()
@@ -37,7 +47,7 @@ exports.register = async function (req, res) {
 	}
 }
 
-exports.login = async function (req, res) {
+exports.login = async function (req: express.Request, res: express.Response) {
 	try {
 		const errors = validationResult(req)
 
@@ -50,13 +60,12 @@ exports.login = async function (req, res) {
 
 		const { email, password } = req.body
 
-		const user = await User.findOne({ email })
-
+		const user: AnswerFind | null = await User.findOne({ email })
 		if (!user) {
 			return res.status(400).json({ message: 'Пользователь не найден' })
 		}
 
-		const isMatch = await bcrypt.compare(password, user.password)
+		const isMatch: boolean = await bcrypt.compare(password, user.password)
 
 		if (!isMatch) {
 			return res
@@ -64,9 +73,13 @@ exports.login = async function (req, res) {
 				.json({ message: 'Неверный пароль, попробуйте снова' })
 		}
 
-		const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
-			expiresIn: '1d',
-		})
+		const token: string = jwt.sign(
+			{ userId: user._id },
+			process.env.JWT_SECRET,
+			{
+				expiresIn: '1d',
+			}
+		)
 
 		res.json({ token })
 	} catch (e) {

@@ -2,6 +2,12 @@ import * as jwt from 'jsonwebtoken'
 import * as express from 'express'
 const ToDoItem = require('../models/todo.model')
 
+interface AnswerAuth {
+	userId: string;
+	iat: number;
+	exp: number;
+}
+
 exports.todoCreateWithUsers = async function (
 	req: express.Request,
 	res: express.Response
@@ -9,8 +15,8 @@ exports.todoCreateWithUsers = async function (
 	try {
 		const { text } = req.body
 
-		const token = req.headers.authorization.split(' ')[1]
-		const decoded = jwt.verify(token, process.env.JWT_SECRET)
+		const token: string = req.headers.authorization.split(' ')[1]
+		const decoded: AnswerAuth = await jwt.verify(token, process.env.JWT_SECRET)
 
 		const todoitem = new ToDoItem({
 			text,
@@ -26,8 +32,8 @@ exports.todoCreateWithUsers = async function (
 
 exports.todoGet = async function (req: express.Request, res: express.Response) {
 	try {
-		const token = req.headers.authorization.split(' ')[1]
-		const decoded = jwt.verify(token, process.env.JWT_SECRET)
+		const token: string = req.headers.authorization.split(' ')[1]
+		const decoded: AnswerAuth = jwt.verify(token, process.env.JWT_SECRET)
 		const todoitem = await ToDoItem.find({ owner: decoded.userId })
 
 		res.json(todoitem)
@@ -82,9 +88,9 @@ exports.todoCompleteAll = async function (
 	next: Function
 ) {
 	try {
-		const token = req.headers.authorization.split(' ')[1]
+		const token: string = req.headers.authorization.split(' ')[1]
 
-		const decoded = jwt.verify(token, process.env.JWT_SECRET)
+		const decoded: AnswerAuth = jwt.verify(token, process.env.JWT_SECRET)
 
 		await ToDoItem.updateMany(
 			{ owner: decoded.userId },
@@ -106,9 +112,9 @@ exports.todoDeleteCompleted = async function (
 	next: Function
 ) {
 	try {
-		const token = req.headers.authorization.split(' ')[1]
+		const token: string = req.headers.authorization.split(' ')[1]
 
-		const decoded = jwt.verify(token, process.env.JWT_SECRET)
+		const decoded: AnswerAuth = jwt.verify(token, process.env.JWT_SECRET)
 
 		await ToDoItem.deleteMany(
 			{ owner: decoded.userId, state: 'completed' },

@@ -1,6 +1,5 @@
-import * as express from 'express'
-// import express = require('express')
-const router = express.Router()
+import { Router } from 'express'
+const router = Router()
 
 const todoitem_controller = require('../controllers/todo.controller')
 const auth = require('../middleware/auth.middleware.ts')
