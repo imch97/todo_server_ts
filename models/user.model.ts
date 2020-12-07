@@ -1,9 +1,8 @@
-import * as mongoose from 'mongoose'
-const Schema = mongoose.Schema
+import { model, Schema } from 'mongoose'
 
 let UserSchema = new Schema({
 	email: { type: String, required: true },
 	password: { type: String, required: true },
 })
 
-module.exports = mongoose.model('users', UserSchema)
+module.exports = model('users', UserSchema)

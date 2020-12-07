@@ -1,22 +1,19 @@
-import * as jwt from 'jsonwebtoken'
-import * as express from 'express'
+import { verify } from 'jsonwebtoken'
+import { Request, Response } from 'express'
 const ToDoItem = require('../models/todo.model')
 
-interface AnswerAuth {
+interface Auth {
 	userId: string;
 	iat: number;
 	exp: number;
 }
 
-exports.todoCreateWithUsers = async function (
-	req: express.Request,
-	res: express.Response
-) {
+exports.todoCreateWithUsers = async function (req: Request, res: Response) {
 	try {
 		const { text } = req.body
 
 		const token: string = req.headers.authorization.split(' ')[1]
-		const decoded: AnswerAuth = await jwt.verify(token, process.env.JWT_SECRET)
+		const decoded: Auth = await verify(token, process.env.JWT_SECRET)
 
 		const todoitem = new ToDoItem({
 			text,
@@ -30,10 +27,10 @@ exports.todoCreateWithUsers = async function (
 	}
 }
 
-exports.todoGet = async function (req: express.Request, res: express.Response) {
+exports.todoGet = async function (req: Request, res: Response) {
 	try {
 		const token: string = req.headers.authorization.split(' ')[1]
-		const decoded: AnswerAuth = jwt.verify(token, process.env.JWT_SECRET)
+		const decoded: Auth = await verify(token, process.env.JWT_SECRET)
 		const todoitem = await ToDoItem.find({ owner: decoded.userId })
 
 		res.json(todoitem)
@@ -44,8 +41,8 @@ exports.todoGet = async function (req: express.Request, res: express.Response) {
 }
 
 exports.todoRemove = async function (
-	req: express.Request,
-	res: express.Response,
+	req: Request,
+	res: Response,
 	next: Function
 ) {
 	try {
@@ -63,8 +60,8 @@ exports.todoRemove = async function (
 }
 
 exports.todoUpdate = async function (
-	req: express.Request,
-	res: express.Response,
+	req: Request,
+	res: Response,
 	next: Function
 ) {
 	try {
@@ -83,14 +80,14 @@ exports.todoUpdate = async function (
 }
 
 exports.todoCompleteAll = async function (
-	req: express.Request,
-	res: express.Response,
+	req: Request,
+	res: Response,
 	next: Function
 ) {
 	try {
 		const token: string = req.headers.authorization.split(' ')[1]
 
-		const decoded: AnswerAuth = jwt.verify(token, process.env.JWT_SECRET)
+		const decoded: Auth = await verify(token, process.env.JWT_SECRET)
 
 		await ToDoItem.updateMany(
 			{ owner: decoded.userId },
@@ -107,14 +104,14 @@ exports.todoCompleteAll = async function (
 }
 
 exports.todoDeleteCompleted = async function (
-	req: express.Request,
-	res: express.Response,
+	req: Request,
+	res: Response,
 	next: Function
 ) {
 	try {
 		const token: string = req.headers.authorization.split(' ')[1]
 
-		const decoded: AnswerAuth = jwt.verify(token, process.env.JWT_SECRET)
+		const decoded: Auth = await verify(token, process.env.JWT_SECRET)
 
 		await ToDoItem.deleteMany(
 			{ owner: decoded.userId, state: 'completed' },

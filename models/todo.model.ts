@@ -1,6 +1,4 @@
-import * as mongoose from 'mongoose'
-const { Types } = require('mongoose')
-const Schema = mongoose.Schema
+import { model, Schema, Types } from 'mongoose'
 
 let ToDoSchema = new Schema({
 	text: { type: String, required: true, max: 100 },
@@ -8,4 +6,4 @@ let ToDoSchema = new Schema({
 	owner: { type: Types.ObjectId, ref: 'user' },
 })
 
-module.exports = mongoose.model('todo', ToDoSchema)
+module.exports = model('todo', ToDoSchema)
