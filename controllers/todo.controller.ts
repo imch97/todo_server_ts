@@ -1,9 +1,13 @@
-const jwt = require('jsonwebtoken')
+import * as jwt from 'jsonwebtoken'
+import * as express from 'express'
 const ToDoItem = require('../models/todo.model')
-import express = require('express');
 
-exports.todoCreateWithUsers = async function (req:express.Request, res:express.Response,) {
+exports.todoCreateWithUsers = async function (
+	req: express.Request,
+	res: express.Response
+) {
 	try {
+		console.log('-------------------')
 		const { text } = req.body
 
 		const token = req.headers.authorization.split(' ')[1]
@@ -11,7 +15,7 @@ exports.todoCreateWithUsers = async function (req:express.Request, res:express.R
 
 		const todoitem = new ToDoItem({
 			text,
-			completed: false,
+			state: 'inProgressive',
 			owner: decoded.userId,
 		})
 		todoitem.save().then((result) => res.status(201).json(result))
@@ -21,7 +25,7 @@ exports.todoCreateWithUsers = async function (req:express.Request, res:express.R
 	}
 }
 
-exports.todoGet = async function (req:express.Request, res:express.Response) {
+exports.todoGet = async function (req: express.Request, res: express.Response) {
 	try {
 		const token = req.headers.authorization.split(' ')[1]
 		const decoded = jwt.verify(token, process.env.JWT_SECRET)
@@ -34,7 +38,11 @@ exports.todoGet = async function (req:express.Request, res:express.Response) {
 	}
 }
 
-exports.todoRemove = async function (req:express.Request, res:express.Response, next:Function) {
+exports.todoRemove = async function (
+	req: express.Request,
+	res: express.Response,
+	next: Function
+) {
 	try {
 		const { _id } = req.body
 		await ToDoItem.findByIdAndRemove({ _id }, function (err) {
@@ -49,9 +57,11 @@ exports.todoRemove = async function (req:express.Request, res:express.Response, 
 	}
 }
 
-exports.todoUpdate = async function (req:express.Request, res:express.Response, next:Function) {
-    
- 
+exports.todoUpdate = async function (
+	req: express.Request,
+	res: express.Response,
+	next: Function
+) {
 	try {
 		await ToDoItem.findByIdAndUpdate(
 			req.body._id,
@@ -67,7 +77,11 @@ exports.todoUpdate = async function (req:express.Request, res:express.Response, 
 	}
 }
 
-exports.todoCompleteAll = async function (req:express.Request, res:express.Response, next:Function) {
+exports.todoCompleteAll = async function (
+	req: express.Request,
+	res: express.Response,
+	next: Function
+) {
 	try {
 		const token = req.headers.authorization.split(' ')[1]
 
@@ -87,7 +101,11 @@ exports.todoCompleteAll = async function (req:express.Request, res:express.Respo
 	}
 }
 
-exports.todoDeleteCompleted = async function (req:express.Request, res:express.Response, next:Function) {
+exports.todoDeleteCompleted = async function (
+	req: express.Request,
+	res: express.Response,
+	next: Function
+) {
 	try {
 		const token = req.headers.authorization.split(' ')[1]
 
@@ -105,4 +123,3 @@ exports.todoDeleteCompleted = async function (req:express.Request, res:express.R
 		return e
 	}
 }
-

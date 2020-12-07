@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken'
+import * as jwt from 'jsonwebtoken'
 const bcrypt = require('bcryptjs')
 const { validationResult } = require('express-validator')
 const User = require('../models/user.model.ts')
