@@ -1,0 +1,1 @@
+enum controlBadges {'All', 'ToDo', 'Completed'}
