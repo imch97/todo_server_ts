@@ -1,1 +1,1 @@
-enum controlBadges {'All', 'ToDo', 'Completed'}
+export enum controlBadges {'All', 'ToDo', 'Completed'}
